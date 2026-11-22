@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plans and Pricing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #111115;
+    --card-raised: #16161b;
+    --line: #22222a;
+    --line-strong: #2e2e37;
+    --text: #f4f4f6;
+    --text-2: #b4b4bd;
+    --mute: #7c7c87;
+
+    --blue: #4f8cff;
+    --green: #3ecf8e;
+    --emerald: #10b981;
+    --deep-green: #0f7a55;
+
+    --radius-card: 16px;
+    --radius-ctl: 8px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 96px 24px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  .intro {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 64px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    color: var(--text-2);
+    background: var(--card);
+  }
+
+  h1 {
+    margin-top: 24px;
+    font-size: clamp(40px, 7vw, 64px);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .subtitle {
+    margin: 20px auto 0;
+    max-width: 30em;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  /* ---------- Billing toggle ---------- */
+  .billing {
+    margin-top: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .toggle {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 4px; bottom: 4px; left: 4px;
+    width: calc(50% - 4px);
+    border-radius: 7px;
+    background: var(--line-strong);
+    transition: transform .35s var(--ease);
+  }
+  .toggle[data-period="annual"] .toggle-thumb { transform: translateX(100%); }
+
+  .toggle button {
+    position: relative;
+    z-index: 1;
+    border: 0;
+    background: none;
+    color: var(--mute);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: color .2s;
+  }
+  .toggle button[aria-pressed="true"] { color: var(--text); }
+  .toggle button:hover { color: var(--text); }
+
+  .save {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--green);
+  }
+
+  /* ---------- Cards ---------- */
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .plan {
+    --tier: var(--blue);
+    --tier-border: var(--blue);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform .4s var(--ease), border-color .4s var(--ease), box-shadow .4s var(--ease);
+  }
+  .plan--free    { --tier: var(--blue);    --tier-border: var(--blue); }
+  .plan--pro     { --tier: var(--green);   --tier-border: var(--green); }
+  .plan--advance { --tier: var(--emerald); --tier-border: var(--deep-green); }
+
+  /* top accent line */
+  .plan::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--tier-border) 30%, var(--tier-border) 70%, transparent 100%);
+    opacity: .9;
+    transition: opacity .4s var(--ease);
+  }
+
+  /* soft glow under the top edge */
+  .plan::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    top: -120px;
+    width: 120%;
+    height: 200px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, var(--tier-border), transparent);
+    opacity: .14;
+    transition: opacity .4s var(--ease);
+    pointer-events: none;
+  }
+
+  .plan:hover {
+    transform: translateY(-6px);
+    border-color: color-mix(in srgb, var(--tier-border) 45%, var(--line));
+    box-shadow: 0 24px 48px -24px color-mix(in srgb, var(--tier-border) 40%, transparent);
+  }
+  .plan:hover::after { opacity: .28; }
+  .plan:hover::before { opacity: 1; }
+
+  .plan--pro {
+    background: var(--card-raised);
+    border-color: color-mix(in srgb, var(--green) 22%, var(--line));
+  }
+  .plan--pro::after { opacity: .2; }
+
+  .plan-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .tier-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--tier) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--tier) 35%, transparent);
+    color: var(--tier);
+  }
+  .tier-icon svg { width: 20px; height: 20px; }
+
+  .popular {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: #0a0a0f;
+    background: var(--green);
+  }
+
+  .plan-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+
+  .price {
+    margin-top: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-height: 56px;
+  }
+  .amount {
+    font-size: 48px;
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    display: inline-block;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .amount.is-swapping { opacity: 0; transform: translateY(-6px); }
+  .per {
+    font-size: 15px;
+    color: var(--mute);
+  }
+  .price-note {
+    font-size: 13px;
+    color: var(--mute);
+    min-height: 20px;
+    margin-top: 2px;
+  }
+
+  .desc {
+    margin-top: 16px;
+    color: var(--text-2);
+    font-size: 15px;
+    line-height: 1.55;
+    min-height: 3.1em;
+  }
+
+  /* ---------- Buttons ---------- */
+  .cta {
+    margin-top: 28px;
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: var(--radius-ctl);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid var(--line-strong);
+    background: #1a1a20;
+    color: var(--text);
+    transition: background .2s, border-color .2s, transform .1s;
+  }
+  .cta:hover { background: #22222a; border-color: #3a3a44; }
+  .cta:active { transform: scale(.985); }
+
+  .cta--primary {
+    background: #f4f4f6;
+    border-color: #f4f4f6;
+    color: #0a0a0f;
+    font-weight: 600;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 8px 24px -8px rgba(62,207,142,.35);
+  }
+  .cta--primary:hover { background: #ffffff; border-color: #ffffff; }
+
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Features ---------- */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0 24px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    color: var(--mute);
+    white-space: nowrap;
+  }
+  .divider::before,
+  .divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .features {
+    list-style: none;
+    display: grid;
+    gap: 14px;
+  }
+  .features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: var(--text-2);
+  }
+  .check {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--tier) 14%, transparent);
+    color: var(--tier);
+  }
+  .check svg { width: 12px; height: 12px; }
+
+  /* ---------- Footer note ---------- */
+  .footnote {
+    margin-top: 56px;
+    text-align: center;
+    font-size: 15px;
+    color: var(--mute);
+  }
+  .footnote strong { color: var(--text); font-weight: 500; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 960px) {
+    .plans {
+      grid-template-columns: 1fr;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .desc { min-height: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .page { padding: 64px 16px 56px; }
+    .intro { margin-bottom: 48px; }
+    .plan { padding: 24px; }
+    .toggle button { padding: 10px 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+    .plan:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header class="intro">
+    <span class="badge">PRICING</span>
+    <h1>Plans and Pricing</h1>
+    <p class="subtitle">Start free and upgrade as your team grows. Every plan includes the full workspace.</p>
+
+    <div class="billing">
+      <div class="toggle" id="billing-toggle" data-period="monthly" role="group" aria-label="Billing period">
+        <span class="toggle-thumb" aria-hidden="true"></span>
+        <button type="button" data-period="monthly" aria-pressed="true">Bill Monthly</button>
+        <button type="button" data-period="annual" aria-pressed="false">Bill Annually</button>
+      </div>
+      <span class="save">Save 20% yearly</span>
+    </div>
+  </header>
+
+  <section class="plans" aria-label="Pricing plans">
+
+    <!-- Free -->
+    <article class="plan plan--free">
+      <div class="plan-top">
+        <span class="tier-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/></svg>
+        </span>
+      </div>
+      <h2 class="plan-name">Free Plan</h2>
+      <div class="price">
+        <span class="amount">$0</span><span class="per">/month</span>
+      </div>
+      <p class="price-note">Free forever</p>
+      <p class="desc">For individuals trying things out and running small personal projects.</p>
+      <a class="cta" href="#">Start for Free</a>
+
+      <div class="divider">STAND OUT FEATURES</div>
+      <ul class="features">
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Up to 3 projects</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>1 team member</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>2 GB file storage</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Basic analytics dashboard</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Community support</li>
+      </ul>
+    </article>
+
+    <!-- Pro -->
+    <article class="plan plan--pro">
+      <div class="plan-top">
+        <span class="tier-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L5 14h6l-1 7 8-11h-6l1-7z"/></svg>
+        </span>
+        <span class="popular">POPULAR</span>
+      </div>
+      <h2 class="plan-name">Pro Plan</h2>
+      <div class="price">
+        <span class="amount" data-monthly="$80" data-annual="$64">$80</span><span class="per">/month</span>
+      </div>
+      <p class="price-note" data-monthly="Billed monthly" data-annual="$768 billed yearly">Billed monthly</p>
+      <p class="desc">For growing teams that need more room, deeper insight and faster support.</p>
+      <a class="cta cta--primary" href="#">Start Free 7 Days Trial</a>
+
+      <div class="divider">STAND OUT FEATURES</div>
+      <ul class="features">
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Unlimited projects</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Up to 10 team members</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>100 GB file storage</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Advanced analytics and reports</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Custom domains</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Priority email support</li>
+      </ul>
+    </article>
+
+    <!-- Advance -->
+    <article class="plan plan--advance">
+      <div class="plan-top">
+        <span class="tier-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>
+        </span>
+      </div>
+      <h2 class="plan-name">Advance Plan</h2>
+      <div class="price">
+        <span class="amount">Custom</span>
+      </div>
+      <p class="price-note">Tailored to your organization</p>
+      <p class="desc">For larger organizations with security, compliance and scale requirements.</p>
+      <a class="cta" href="#">Contact Us</a>
+
+      <div class="divider">STAND OUT FEATURES</div>
+      <ul class="features">
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Everything in Pro</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Unlimited team members</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Unlimited file storage</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>SSO and role-based access</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>99.9% uptime SLA</li>
+        <li><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></span>Dedicated account manager</li>
+      </ul>
+    </article>
+
+  </section>
+
+  <p class="footnote"><strong>Start your journey risk free</strong> — No credit card needed</p>
+
+</main>
+
+<script>
+  (function () {
+    var toggle = document.getElementById('billing-toggle');
+    var buttons = toggle.querySelectorAll('button');
+    var swappable = document.querySelectorAll('[data-monthly][data-annual]');
+
+    function setPeriod(period) {
+      if (toggle.dataset.period === period) return;
+      toggle.dataset.period = period;
+      buttons.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.period === period));
+      });
+      swappable.forEach(function (el) {
+        var next = el.dataset[period];
+        if (!el.classList.contains('amount')) { el.textContent = next; return; }
+        el.classList.add('is-swapping');
+        setTimeout(function () {
+          el.textContent = next;
+          el.classList.remove('is-swapping');
+        }, 180);
+      });
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () { setPeriod(b.dataset.period); });
+    });
+  })();
+</script>
+</body>
+</html>
